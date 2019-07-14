@@ -1,10 +1,12 @@
 {
-  "name": "twitbook-cli",
+  "name": "twitter_pwa",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.2.0",
     "compose": "^0.1.2",
     "firebase": "^6.2.4",
+    "moment": "^2.24.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-router": "^5.0.1",
