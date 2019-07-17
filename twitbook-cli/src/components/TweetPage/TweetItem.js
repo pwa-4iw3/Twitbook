@@ -4,7 +4,6 @@ import moment from 'moment';
 class TweetItem extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			pressFavorite: false,
 			pressRetweet: false,
@@ -14,7 +13,7 @@ class TweetItem extends Component {
 	}
 
 	onPressRetweet =() => {
-		this.props.onReTweet(this.props.tweet);
+		this.props.onReTweet(this.props.tweet, this.props.authUser);
 		this.setState({
 		  pressRetweet: true
 		})
@@ -26,7 +25,7 @@ class TweetItem extends Component {
 
 	 
 	onPressFavorite =() => {
-		this.props.onaddFavorite(this.props.tweet);
+		this.props.onaddFavorite(this.props.tweet, this.props.authUser);
 		this.setState({
 			pressFavorite: true
 		})
@@ -51,12 +50,15 @@ class TweetItem extends Component {
 	render() {
 		const {  tweet, onRemoveTweet} = this.props;
 		const { editMode } = this.state;
-		const dateFormat = moment(tweet.createdAt).fromNow()
+		const dateFormat = moment(tweet.createdAt).fromNow();
 		return (
 			<div className="root_Tweet_item">
 				<div className="user">
-					<span className="username"> {tweet.username}</span>
-          			<span className="date"> {dateFormat}</span>
+					<span className="imgcontainer space"> 
+						<img src={tweet.src} alt="Avatar" className="avatar" />  
+					</span>  
+					<span className="username space">   {tweet.username}</span>
+          			<span className="date space">   {dateFormat}</span>
 					{tweet.editedAt && <span>(Edited)</span>}
 				</div>
 				<h3>{tweet.text}</h3>

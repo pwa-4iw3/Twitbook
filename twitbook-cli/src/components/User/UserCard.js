@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { withFirebase } from '../Firebase';
 import {Link } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
+import { Grid } from '@material-ui/core';
 
 class UserCard extends Component {
 	
@@ -18,17 +19,22 @@ class UserCard extends Component {
 	};
 
 	render() {
-		const { user } = this.state;
+		const { user } = this.state ||  [];
+		let  listPhoto = user.listPhoto;
+		if(listPhoto=== undefined)
+		{
+			listPhoto = [];
+		}
 		const userRoute = ROUTES.USER+"/"+user.username;
 		return (
 			<div className="card">
-				<Link to={userRoute}>
-					<img src="https://www.pokepedia.fr/images/thumb/2/29/Ouisticram-Pt.png/250px-Ouisticram-Pt.png" alt="singe" style={{ width:'100%' }}/>  
+				<Link to={ROUTES.ACCOUNT}>
+					<img src={user.src} alt="singe" style={{ width:'100%' }}/>  
 				
 				</Link>
 				<h1>
 					<Link to={userRoute}>
-						{user.name} dddd
+						{user.name}
 					</Link>
 				</h1>
 				<p className="title">
@@ -36,13 +42,14 @@ class UserCard extends Component {
 						@{user.username}
 					</Link>
 				</p>
-				<p>{user.bio} sqdsq defaultsqd qs
-				dsq defaultsqdsq dsq
-				dsqdsqd
-				sqdqsd qsd
-				sqdsqdsqd
-				 qsdsqd
-				 sqdqsdqsdsqd</p>
+				<p>{user.bio}</p>
+				<Grid container>
+					{listPhoto.map(message => (
+						<Grid item xs={4} key={message.url}>
+							<img src={message.url} alt="User_card_P" className="user_card_P" />   
+						</Grid>	
+					))}			
+				</Grid>
 			</div>			
 		);
 	}

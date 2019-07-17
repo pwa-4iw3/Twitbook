@@ -12,74 +12,93 @@ class UserAccount extends Component
           loading: false,
           messages: [],
           limit: 5,
+          user : props.authUser,
+          avatarURL :  props.authUser.src,
+          name : props.authUser.name, 
+          username : props.authUser.username, 
+          email : props.authUser.email, 
+          bio : props.authUser.bio, 
         };
+        console.log(this.state.user);
       }
     handleChangeUsername = event => this.setState({ username: event.target.value });
     handleUploadStart = () => this.setState({ isUploading: true, progress: 0 });
     handleProgress = progress => this.setState({ progress });
     handleUploadError = error => {
         this.setState({ isUploading: false });
-        console.error(error);
     };
     handleUploadSuccess = filename => {
-        console.log(filename)
         this.setState({ avatar: filename, progress: 100, isUploading: false });
         this.props.firebase
-        .images
-        .child(filename)
+        .image(this.state.user.uid+'/'+filename)
         .getDownloadURL()
-        .then(url => this.setState({ avatarURL: url }));
+        .then(url => {
+            let user = this.state.user;
+            this.props.firebase.user(user.uid).child('listPhoto').push({url : url});
+            this.props.firebase.user(user.uid).update({src : url});
+            this.setState({ avatarURL : url})
+        });
     };
 
     onChange = event => {
-        console.log(this.state)
         this.setState({ [event.target.name]: event.target.value });
-      };
+      }; 
+
+    onSubmit = event => {
+        const { username,name, email, bio } = this.state;
+        let user = this.state.user;
+        user.username = username;
+        user.name =  name;
+        user.email =   email;
+        user.bio = bio;
+        this.props.firebase.user(this.state.user.uid).set({
+            ...this.state.user
+        }).then(() => {
+            this.setState({  user : user})
+        });
+        event.preventDefault();
+    };
  
     render()
     {
-        const src="";
-        const username="";
-        const name="";
-        const bio="";
-        const email="";
+        const {user} = this.state;
         return (
             <form onSubmit={this.onSubmit}>
                 <div className="imgcontainer">
-                    <img src="https://www.pokepedia.fr/images/thumb/2/29/Ouisticram-Pt.png/250px-Ouisticram-Pt.png" alt="Avatar" className="avatar"/>
+                    <img src={this.state.avatarURL} alt="Avatar" className="avatar_cardVersion" />
                 </div>
                 <div  className="container">
-                    <label htmlFor="username"><b>User Name</b></label>
-                    <input name="username"  value={username}  onChange={this.onChange} type="text"  placeholder="Full Name"   />
-
-                    <label htmlFor="username"><b>Name</b></label>
-                    <input name="username"  value={name}  onChange={this.onChange} type="text"  placeholder=" Name"   />
+                    <label htmlFor="username"><b>UserName</b></label>
+                    <input name="username"  value={this.state.username}  onChange={this.onChange} type="text"  placeholder="Full Name"   />
+                    
+                    <label htmlFor="name"><b>Name</b></label>
+                    <input name="name"  value={this.state.name}  onChange={this.onChange} type="text"  placeholder=" Name"   />
                     
                     <label htmlFor="email"><b>Email Address</b></label>
-                    <input name="email" value={email} onChange={this.onChange} type="text" placeholder="Email Address"  />
+                    <input name="email" value={this.state.email} onChange={this.onChange} type="text" placeholder="Email Address"  />
                     
                     <label htmlFor="bio"><b>bio</b></label>
-
-                    <textarea className="tweet_text" 
+                    <textarea 
                             name='bio'
-                            value={bio}
+                            value={this.state.bio}
                             onChange={this.onChange}
                     ></textarea>
                    
-                   
-                   
-                    <label style={{backgroundColor: 'steelblue', color: 'white', padding: 10, borderRadius: 4, pointer: 'cursor'}}>
+                    <label className="registerbtn" style={{backgroundColor: 'steelblue', color: 'white',   pointer: 'cursor'}}>
                         Select your awesome avatar
                         <FileUploader
                         hidden
                         accept="image/*"
-                        storageRef={this.props.firebase.image('dqsdds')}
+                        storageRef={this.props.firebase.image(user.uid)}
                         onUploadStart={this.handleUploadStart}
                         onUploadError={this.handleUploadError}
                         onUploadSuccess={this.handleUploadSuccess}
                         onProgress={this.handleProgress}
                         />
                     </label>
+                    <button  className="registerbtn"  type="submit">
+                        Valider
+                    </button>
                 </div>
             </form>
         );

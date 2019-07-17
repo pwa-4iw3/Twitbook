@@ -1,9 +1,8 @@
 import React from 'react';
+import SignInPage from '../Sign/SignIn';
 
 const LandingPage = () => (
-    <div>
-        qdqsddqsd
-    </div>
+        <SignInPage/>
 );
 
 export default LandingPage;

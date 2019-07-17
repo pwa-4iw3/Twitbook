@@ -2,8 +2,6 @@ import React, { Component } from "react"
 import { withFirebase } from '../Firebase';
 import TweetList from './TweetList';
 import TweetInput from "./TweetInput";
-import * as ROUTES from '../../constants/routes';
-import {Link } from 'react-router-dom';
 
 class TweetPage extends Component {
     constructor(props) {
@@ -15,10 +13,12 @@ class TweetPage extends Component {
             limit: 15, 
             openText: false,
             userNameToReply: '',
-            messages: [],
             isReply : false,
-            authUser :  Object.assign({}, props.authUser, { retweets: [] }, { likes: [] }),
-        }     
+            retweets: (this.props.authUser.listRetweet) ?  Object.values(this.props.authUser.listRetweet)  : [],
+            likes: (this.props.authUser.listLike) ?  Object.values(this.props.authUser.listLike)  : [],
+            authUser :  this.props.authUser,
+        }   
+        console.log(this.state)  
     };
   
     componentDidMount() {
@@ -67,52 +67,39 @@ class TweetPage extends Component {
         }
     };
 
-    onaddFavorite = (tweet) =>{
-
-        if (this.state.authUser.likes.filter(rt => rt === tweet.uid).length >0 )
-        {
-            return;
+    onaddFavorite = (tweet, user) =>{
+        if (this.state.likes.filter(rt => rt === tweet.uid).length === 0 )
+        {   
+            this.props.firebase.tweet(tweet.uid).child('listLike').push({
+                userId: user.uid,
+                username: user.username,
+            });
+            tweet.like++;
+            this.props.firebase.tweet(tweet.uid).child('like').set(tweet.like);
+            this.props.firebase.user(user.uid).child('listLike').push(tweet.uid);
+            this.state.likes.push(tweet.uid);
         }
-        this.state.authUser.likes.push(tweet.uid);
-        if(tweet.listFav === undefined)
-        {
-            tweet.listFav = [];
-        }
-        tweet.listFav.push({
-            userId: this.state.authUser.uid,
-            username: this.state.authUser.email.split('@')[0],
-        });
-        tweet.like++;
-        this.props.firebase.tweet(tweet.uid).set({
-            ...tweet
-        });
     }
 
   
-    onReTweet = (tweet) =>{        
-        if (this.state.authUser.retweets.filter(rt => rt === tweet.uid).length >0 )
-        {
-            return;
-        }
-        this.state.authUser.retweets.push(tweet.uid);
-
-        if(tweet.listreTweets === undefined)
-        {
-            tweet.listreTweets = [];
-        }
-        tweet.listreTweets.push({
-            text: this.state.text,
-            userId: this.state.authUser.uid,
-            username: this.state.authUser.email.split('@')[0],
-            createdAt: this.props.firebase.serverValue.TIMESTAMP,
-            like: 0,
-            retweets: 0,
-        });
-        tweet.retweets++;
-        this.props.firebase.tweet(tweet.uid).set({
-            ...tweet
-        });
-
+    onReTweet = (tweet, user) =>{    
+         if (this.state.retweets.filter(rt => rt === tweet.uid).length === 0 )
+         {   
+            tweet.retweets++;
+            this.props.firebase.tweet(tweet.uid).child('listreTweets').push({
+                text: this.state.text,
+                userId: user.uid,
+                src: user.src,
+                username: user.username,
+                createdAt: this.props.firebase.serverValue.TIMESTAMP,
+                like: 0,
+                retweets: 0,
+            });
+            this.props.firebase.tweet(tweet.uid).child('retweets').set(tweet.retweets);
+            this.props.firebase.user(user.uid).child('listRetweet').push(tweet.uid);
+            this.state.retweets.push(tweet.uid);
+         }
+       
     }
 
     onCreateTweet = (event) => {
@@ -121,6 +108,7 @@ class TweetPage extends Component {
             userId: this.state.authUser.uid,
             username: this.state.authUser.email.split('@')[0],
             createdAt: this.props.firebase.serverValue.TIMESTAMP,
+            src: this.state.authUser.src,
             like: 0,
             retweets: 0,
             listreTweets:[],
@@ -165,8 +153,7 @@ class TweetPage extends Component {
       }
 
     render() {
-        const { text, tweets, loading, authUser } = this.state;
-        const userRoute = ROUTES.USER+"/"+authUser.username;
+        const { tweets, loading, authUser } = this.state;
         return (
                 <div>
                     {loading && <div>Loading ...</div>}  
