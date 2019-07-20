@@ -9,10 +9,13 @@ import PasswordForgetPage from '../Password/PasswordForget';
 import HomePage from '../Home';
 import AccountPage from '../Account';
 import ListeAmisPage from '../ListeDesAmis';
+import LandingPage from '../Landing';
+import NotificationPage from '../Notification';
+import ListOfUserPage from '../ListOfUsers';
+
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session';
-import LandingPage from '../Landing';
 
 const App = () => (
 	<Router>
@@ -27,6 +30,8 @@ const App = () => (
 				<Route path={ROUTES.LISTEAMIS} component={ListeAmisPage} />
 				<Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage}	/>
 				<Route path={ROUTES.ACCOUNT} component={AccountPage} />
+				<Route path={ROUTES.NOTIFICATION} component={NotificationPage} />
+				<Route path={ROUTES.LISTOFUSER} component={ListOfUserPage} />
 			</div>
 		</div>
 	</Router>

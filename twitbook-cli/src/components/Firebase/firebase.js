@@ -53,7 +53,6 @@ class Firebase {
 							emailVerified: authUser.emailVerified,
 							...dbUser,
 						};
-
 						next(authUser);
 					});
 			} else {
@@ -72,6 +71,14 @@ class Firebase {
 	tweet = id => this.db.ref(`tweets/${id}`);
 
 	tweets = () => this.db.ref('tweets');
+
+	chat = id => this.db.ref(`chats/${id}`);
+
+	chats = () => this.db.ref(`chats`);
+
+	notification = id => this.db.ref(`notifications/${id}`);
+
+	notifications = () => this.db.ref(`notifications`);
 
 	image = id => this.storage.ref(`images/${id}`);
 
