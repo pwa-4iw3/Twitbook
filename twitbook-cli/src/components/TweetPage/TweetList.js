@@ -7,26 +7,24 @@ const TweetList = ({
 	tweets,
 	onReTweet ,
 	onaddFavorite,
-	onReplyTweet,
-	onEditTweet,
 	onRemoveTweet,
+	onComment,
 	onFollow,
 	follow,
 	name,
 }) => (
 	<div className="root_listTweet">
 		{tweets.map(tweet => (
-			<TweetItem 	key={tweet.uid}
+			<TweetItem 	key={tweet.tid}
 						authUser={authUser}
 						tweet={tweet}
 						name = {name}
 						onReTweet ={onReTweet}
 						onaddFavorite={onaddFavorite}
-						onReplyTweet={onReplyTweet}
-						onEditTweet={onEditTweet}
 						onRemoveTweet={onRemoveTweet}
 						onFollow = {onFollow}
 						follow = {follow}
+						onComment= {onComment}
 			/>
 		)).reverse()}
 	</div>

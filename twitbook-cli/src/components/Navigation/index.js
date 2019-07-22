@@ -6,49 +6,42 @@ import SignOutButton from '../Sign/SignOut';
 import { AuthUserContext } from '../Session';
 
 const Navigation = () => (
-	<header className="root">
-		<h1 className="fa fa-twitter">PWA twitter</h1>
+	
 		<AuthUserContext.Consumer>
 			{authUser => authUser ? (
-					<NavigationAuth authUser={authUser} />
+					<NavigationAuth />
 				) : (
 					<NavigationNonAuth />
 				)
 			}
 		</AuthUserContext.Consumer>
-	</header>
 );
 
-const NavigationAuth  = ({ authUser }) => (
+const NavigationAuth  = () => (
 	
-	<ul>
-		<li>
+	<div className="navbar">
+		
 			<Link to={ROUTES.HOME}>Home</Link>
-		</li>
-		<li>
+	
 			<Link to={ROUTES.ACCOUNT}>Account</Link>
-		</li>
-		<li>
+		
 			<Link to={ROUTES.LISTEAMIS}>messagerie</Link>
-		</li>
-		<li>
+		
 			<Link to={ROUTES.NOTIFICATION}>Notification</Link>
-		</li>
-		<li style={{float: 'right'}}>
-			<SignOutButton />
-		</li>
-	</ul>
+		
+			<Link to={ROUTES.LISTOFUSER}>Listes des utilisateurs</Link>
+		
+		
+			<Link className="right" to="#"><SignOutButton /></Link>
+	</div>
 );
 
 const NavigationNonAuth = () => (
-	<ul>
-		<li>
-			<Link to={ROUTES.SIGN_IN}>Sign In</Link>
-		</li>
-		<li>
-			<Link to={ROUTES.SIGN_UP}>Sign Up</Link>
-		</li>
-	</ul>
+
+	<div className="navbar">
+		<Link className="right" to={ROUTES.SIGN_IN}>Sign In</Link>
+		<Link className="right" to={ROUTES.SIGN_UP}>Sign Up</Link>
+	</div>
 );
 	
 	

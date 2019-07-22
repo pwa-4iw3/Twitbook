@@ -1,7 +1,8 @@
 import React from 'react';
-import Navigation from '../Navigation';
 
 const Header = () => (
-    <Navigation />
+    <header className="root">
+		  <h1>PWA twitter</h1>
+    </header>
 );
 export default Header;

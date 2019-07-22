@@ -1,37 +1,25 @@
 import React, { Component } from 'react';
 import moment from 'moment';
+import TweetCommentCard from './TweetCommentCard';
 
 class TweetItem extends Component {
 	constructor(props) {
 		super(props);
-		let followState = true;
-		if (this.props.follow.filter(rt => rt === this.props.tweet.userId).length === 0 )
-        {   
-			followState = false;
-        }
+		const followState = this.props.follow.filter(rt => rt === this.props.tweet.userId).length === 0? true : false;
+
 		this.state = {
-			pressFavorite: false,
-			pressRetweet: false,
-			editMode: false,
 			name : this.props.name,
 			editText: this.props.tweet.text,
 			followTexte : (followState) ?   "Unfollow"  : "Follow",
-			followState : followState
+			followState : followState,
+			commentText : ''
 		};
 	}
 
 	onPressRetweet =() => {
-		this.props.onReTweet(this.props.tweet, this.props.authUser);
-		this.setState({
-		  pressRetweet: true
-		})
+		this.props.onReTweet('\n\n@'+this.props.tweet.username+' '+this.props.tweet.text);
 	}
 
-	onReplyTweet =() => {
-		this.props.onReplyTweet(this.props.tweet.username);
-	}
-
-	 
 	onPressFavorite =() => {
 		this.props.onaddFavorite(this.props.tweet, this.props.authUser);
 		this.setState({
@@ -39,21 +27,14 @@ class TweetItem extends Component {
 		})
 	}
 
-	onChangeEditText = event => {
-		this.setState({ editText: event.target.value });
-	  };
+	onChangeCommentText =event=>{
+		this.setState({ commentText: event.target.value });
+	}
 
-	onSaveEditText = () => {
-		this.props.onEditTweet(this.props.tweet);
-		this.setState({ editMode: false });
-	   };
-	   
-	onToggleEditMode = () => {
-		this.setState(state => ({
-			editMode: !state.editMode,
-			editText: this.props.tweet.text,
-		}));
-	};
+	onComment =() => {
+		this.props.onComment(this.props.tweet, this.props.authUser, this.state.commentText);
+	}
+
 	
 	onFollow= () => {
 		let text = "Follow";
@@ -68,15 +49,10 @@ class TweetItem extends Component {
 		this.props.onFollow(this.props.tweet.userId, this.props.authUser);
 	};
 
-	toto = ()=>{
-		console.log("j'ai reussi");
-	}
-
-
 	render() {
 		const {  tweet, onRemoveTweet} = this.props;
-		const { editMode } = this.state;
 		const dateFormat = moment(tweet.createdAt).fromNow();
+		const commentList = tweet.listCommentaire ? Object.values(tweet.listCommentaire):null;
 		return (
 			<div key={tweet.uid} className="root_Tweet_item">
 				<div className="user">
@@ -92,43 +68,46 @@ class TweetItem extends Component {
 				</div>
 				<h3>{tweet.text}</h3>
 				<div className="buttons">
-					<div className="icon_reply" onClick={this.onReplyTweet} >
-						<span className='fa fa-reply'>  Reply</span>
-					</div>
 					<div className="rtGreen space" onClick={this.onPressRetweet} >
 						<span className='fa fa-retweet'></span>
-						<span className="number">{tweet.retweets}   Retweet</span>
+						<span className="number"> Retweet</span>
 					</div>
 					<div className="favYellow space" onClick={this.onPressFavorite} >
 						<span className='fa fa-star'></span>
 						<span className="number">{tweet.like}   Like</span>
 					</div>
-				{/*	{editMode ? (
-						<div className="space">
-							<div className="space" onClick={this.onSaveEditText} >
-								<span className='fa fa-save'></span>
-								<span className="number">  Save</span>
-							</div>
-							<div className="space" onClick={this.onToggleEditMode} >
-								<span className='fa fa-empty-set'></span>
-								<span className="number">   Reset</span>
-							</div>
-						</div>
 
-					) : (
-						<div className="space" onClick={this.onToggleEditMode} >
-							<span className='fa fa-edit'></span>
-							<span className="number">  Edit</span>
-						</div>
-					)}*/}
-
-					{!editMode && (
+					{tweet.userId === this.props.authUser.uid? (
 						<div className=" space" onClick={() => onRemoveTweet(tweet.tid)} >
 							<span className='fas fa-eraser'></span>
 							<span className="number">  Delete</span>
 						</div>
-					)}				
+					): ('')}				
 				</div>
+				<div className="stylish-input-group">
+					<input type="text" className="search-bar"  
+						name='text'
+						value = {this.state.commentText}
+						onChange={this.onChangeCommentText}
+					placeholder="Comment" />
+						<span className="input-comment">
+							<button onClick={this.onComment} type="button"> <i className="fa fa-paper-plane-o" aria-hidden="true"></i> </button>
+						</span> 
+				</div>
+
+
+				<div className="new_comment">
+					<ul className="user_comment">	
+						{commentList ?
+							commentList.map((comment, key)=>(
+								key>commentList.length-4? <TweetCommentCard 	key={key} 
+													comment={comment} />:''
+							)) :''
+						}					
+					</ul>
+				</div>
+
+				
 			</div>
 		);
 	}
