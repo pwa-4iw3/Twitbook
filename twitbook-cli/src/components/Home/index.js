@@ -1,5 +1,5 @@
 import React from 'react';
-import {TweetPage} from '../TweetPage';
+import {TweetPageALL} from '../TweetPage';
 import { compose } from 'recompose';
 import { AuthUserContext } from '../Session';
 import { withAuthorization } from '../Session';
@@ -13,7 +13,7 @@ const HomePage = () => (
 					 	<UserCard {...authUser}/>
 					</div>
 					<div className="rightcolumn">
-						<TweetPage authUser = {authUser} />
+						<TweetPageALL authUser = {authUser} />
 					</div>					
 				</div>
 			)}
@@ -27,4 +27,6 @@ const condition = authUser => !!authUser;
 export default compose(
 	withAuthorization(condition),
 )(HomePage);
+
+export {UserCard};
 
