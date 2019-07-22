@@ -5,9 +5,10 @@ import TweetCommentCard from './TweetCommentCard';
 class TweetItem extends Component {
 	constructor(props) {
 		super(props);
-		const followState = this.props.follow.filter(rt => rt === this.props.tweet.userId).length === 0? true : false;
+		const followState = this.props.follow.filter(rt => rt === this.props.tweet.userId).length !== 0? true : false;
 
 		this.state = {
+
 			name : this.props.name,
 			editText: this.props.tweet.text,
 			followTexte : (followState) ?   "Unfollow"  : "Follow",
